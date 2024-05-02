@@ -2,9 +2,13 @@ import datetime
 
 import yfinance as yf
 from Data.models import StockPrice
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def collect_stock_data(c_symbol):
+    logger.info(f"Collecting data for {c_symbol}")
     today = datetime.datetime.today().strftime('%Y-%m-%d')
 
     try:
@@ -15,7 +19,6 @@ def collect_stock_data(c_symbol):
         data.reset_index(inplace=True)
         # Iterate through downloaded data and add/update entries
         for index, row in data.iterrows():
-            print('heloo')
             date = row['Date']
             stock_price, created = StockPrice.objects.get_or_create(
                 date=date,
@@ -35,11 +38,9 @@ def collect_stock_data(c_symbol):
                 stock_price.close_price = row['Close']
                 stock_price.save()
             else:
-                print(f"New entry created for {c_symbol} on {date}")
+                logger.info(f"New entry created for {c_symbol} on {date}")
 
-        print(f"Successfully collected data for {c_symbol}")
+        logger.info(f"Data collection completed for {c_symbol}")
 
     except Exception as e:
-        print(f"Error collecting data for {c_symbol}: {e}")
-
-
+        logger.error(f"Error collecting data for {c_symbol}: {e}")

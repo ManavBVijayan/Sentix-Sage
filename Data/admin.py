@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import News,StockPrice
 
-# Register your models here.
+admin.site.register(StockPrice)
+admin.site.register(News)
+
